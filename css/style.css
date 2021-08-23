@@ -180,7 +180,7 @@ body {
 
 .todo-remove {
     background-image: url("../img/trash.png");
- }
+}
 
 .todo-complete {
     background-image: url("../img/uncheck.png");

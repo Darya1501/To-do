@@ -26,10 +26,11 @@ class ToDo {
     li.insertAdjacentHTML('beforeend', `
       <span class="text-todo">${todo.value}</span>
 				<div class="todo-buttons">
+          <button class="todo-edit"></button>
 					<button class="todo-remove"></button>
 					<button class="todo-complete"></button>
 				</div>
-    `); // <button class="todo-edit"></button>
+    `);
 
     if (todo.completed) {
       this.todoCompleted.append(li);
@@ -61,7 +62,20 @@ class ToDo {
   deleteItem(item) {
     const key = item.getAttribute('data-key');
     this.todoData.delete(key);
-    this.render();
+    item.style.opacity = 1;
+    item.style.backgroundColor = '#FFE4E1';
+    let reqID = 0;
+    const animate = () => {
+      if (item.style.opacity > 0) {
+        item.style.opacity = -0.05 + parseFloat(item.style.opacity);
+        reqID = requestAnimationFrame(animate);
+      } else {
+        cancelAnimationFrame(reqID);
+        this.render();
+        return;
+      }
+    };
+    animate();
   }
 
   completeItem(item) {
@@ -71,7 +85,31 @@ class ToDo {
         todo.completed = !todo.completed;
       }
     });
-    this.render();
+    item.style.opacity = 1;
+    item.style.backgroundColor = 'rgba(33, 150, 243, 0.5)';
+    let reqID = 0;
+    const animate = () => {
+      if (item.style.opacity > 0) {
+        item.style.opacity = -0.05 + parseFloat(item.style.opacity);
+        reqID = requestAnimationFrame(animate);
+      } else {
+        cancelAnimationFrame(reqID);
+        this.render();
+        return;
+      }
+    };
+    animate();
+  }
+
+  editItem(item) {
+    const key = item.getAttribute('data-key');
+    this.todoData.forEach(todo => {
+      if (todo.key === key) {
+        const newValue = prompt('Введите новое значение:', todo.value);
+        todo.value = newValue ? newValue : todo.value;
+        this.render();
+      }
+    });
   }
 
   hendler() {
@@ -83,6 +121,8 @@ class ToDo {
           this.deleteItem(target.closest('.todo-item'));
         } else if (target.className === 'todo-complete') {
           this.completeItem(target.closest('.todo-item'));
+        } else if (target.className === 'todo-edit') {
+          this.editItem(target.closest('.todo-item'));
         }
       }
       return;
